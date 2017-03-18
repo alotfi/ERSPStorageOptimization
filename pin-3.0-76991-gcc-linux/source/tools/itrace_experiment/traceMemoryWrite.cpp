@@ -16,11 +16,17 @@
 FILE * trace;
 using namespace std;
 
-// Print a memory write record
-static VOID RecordMemWrite(INS ins, UINT32 memOp){
-	cout << "syntax = " <<INS_Disassemble(ins) << " pc = "<< INS_Address(ins)<<" immediateValue" <<INS_OperandImmediate(ins,memOp)<<endl;
 
+//Atieh: you don't send ins to the function, your functions should be as follows, if you want more information just pass it through the INSERTCALl
+// if you want to print the instruction, do it in the instruction function
+VOID RecordMemWrite(ADDRINT ip, UINT32 memOp, ADDRINT addr){
+	//the body
 }
+// Print a memory write record
+//static VOID RecordMemWrite(INS ins, UINT32 memOp){
+//	cout << "syntax = " <<INS_Disassemble(ins) << " pc = "<< INS_Address(ins)<<" immediateValue" <<INS_OperandImmediate(ins,memOp)<<endl;
+
+//}
 
 // Is called for every instruction and instruments writes
 VOID Instruction(INS ins, VOID *v)
@@ -45,8 +51,13 @@ VOID Instruction(INS ins, VOID *v)
 				if(INS_OperandIsImmediate(ins, 1)){
 					UINT32 val =  INS_OperandImmediate(ins,1);
 
+					//INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR) RecordMemWrite, 
+					 //	IARG_INST_PTR, val,
+					  // 	IARG_END);
+					//Atieh 1. added the type of val
+					//Atieh 2. added the effective address of memory
 					INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR) RecordMemWrite, 
-					 	IARG_INST_PTR, val,
+					 	IARG_INST_PTR, IARG_UINT32, val, IARG_MEMORYOP_EA,
 					   	IARG_END);
 				}
 			}		
